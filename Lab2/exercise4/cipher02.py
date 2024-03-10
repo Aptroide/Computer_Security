@@ -1,24 +1,36 @@
 from Crypto.Cipher import DES
+from Crypto.Util.Padding import pad, unpad
+import sys
 import binascii
 
+def encrypt(plaintext, key):
+    cipher = DES.new(key, DES.MODE_ECB)
+    padded_plaintext = pad(plaintext.encode(), DES.block_size)
+    ciphertext = cipher.encrypt(padded_plaintext)
+    return binascii.hexlify(ciphertext).decode()
+
 def decrypt(ciphertext, key):
-    cipher = DES.new(key, DES.MODE_CBC)
+    cipher = DES.new(key, DES.MODE_ECB)
     ciphertext = binascii.unhexlify(ciphertext)
-    plaintext = cipher.decrypt(ciphertext)
-    return plaintext
+    padded_plaintext = cipher.decrypt(ciphertext)
+    plaintext = unpad(padded_plaintext, DES.block_size)
+    return plaintext.decode()
 
 if __name__ == "__main__":
-    ciphertext = input("Enter ciphertext (in hexadecimal): ")
-    password = input("Enter password: ")
+    if len(sys.argv) != 3:
+        print("Usage: python cipher_des.py <plaintext> <password>")
+        sys.exit(1)
 
-    # Adjust key length
+    plaintext = sys.argv[1]
+    password = sys.argv[2]
+
+    # Ajustar la longitud de la clave
     key = password.ljust(8)[:8].encode()
 
-    decrypted_plaintext = decrypt(ciphertext, key)
-    print("Decrypted plaintext:", decrypted_plaintext)
+    print("Before padding:", plaintext)
 
-    # Attempt to decode the decrypted plaintext as UTF-8 text
-    try:
-        print("Decrypted plaintext:", decrypted_plaintext.decode('utf-8'))
-    except UnicodeDecodeError:
-        print("Decrypted data is not valid UTF-8 or is binary/non-textual.")
+    ciphertext = encrypt(plaintext, key)
+    print("Cipher (ECB):", ciphertext)
+
+    decrypted_plaintext = decrypt(ciphertext, key)
+    print("  decrypt:", decrypted_plaintext)

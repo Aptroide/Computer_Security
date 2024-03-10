@@ -1,13 +1,11 @@
 from Crypto.Cipher import DES
-from Crypto.Util.Padding import unpad
 import binascii
 
 def decrypt(ciphertext, key):
-    cipher = DES.new(key, DES.MODE_ECB)
+    cipher = DES.new(key, DES.MODE_CBC)
     ciphertext = binascii.unhexlify(ciphertext)
-    padded_plaintext = cipher.decrypt(ciphertext)
-    plaintext = unpad(padded_plaintext, DES.block_size)
-    return plaintext.decode()
+    plaintext = cipher.decrypt(ciphertext)
+    return plaintext
 
 if __name__ == "__main__":
     ciphertext = input("Enter ciphertext (in hexadecimal): ")
@@ -18,3 +16,9 @@ if __name__ == "__main__":
 
     decrypted_plaintext = decrypt(ciphertext, key)
     print("Decrypted plaintext:", decrypted_plaintext)
+
+    # Attempt to decode the decrypted plaintext as UTF-8 text
+    try:
+        print("Decrypted plaintext:", decrypted_plaintext.decode('utf-8'))
+    except UnicodeDecodeError:
+        print("Decrypted data is not valid UTF-8 or is binary/non-textual.")
