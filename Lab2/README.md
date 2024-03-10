@@ -9,42 +9,42 @@ In this exercise, we explore the OpenSSL command-line interface and perform oper
 ### 1. Encryption Methods Supported by OpenSSL
 Five encryption methods supported by OpenSSL include AES, 3DES, Blowfish, RC4, and ChaCha20.
 
-`![Encryption Methods](/Labs/Lab2/exercise1/1_1.png)`
+![Encryption Methods](/Lab2/exercise1/1_1.png)
 
 ### 2. Version of OpenSSL
 The version of OpenSSL being used for these exercises.
 
-`![OpenSSL Version](/Labs/Lab2/exercise1/1_2.png)`
+![OpenSSL Version](/Lab2/exercise1/1_2.png)
 
 ### 3. Help of OpenSSL
 The help menu of OpenSSL provides a comprehensive list of commands and options available.
 
-`![OpenSSL Help](/Labs/Lab2/exercise1/1_3.png)`
+![OpenSSL Help](/Lab2/exercise1/1_3.png)
 
 ### 4. Checking Prime Numbers with OpenSSL
 We use the OpenSSL command to check if certain large numbers are prime.
   
-`![Prime Check](/Labs/Lab2/exercise1/1_4.png)`
+![Prime Check](/Lab2/exercise1/1_4.png)
 
 ### 5. Generate a random prime number of 4096 bits with OpenSSL
 We use the OpenSSL command to generate a random prime number of 4096 bits.
   
-`![Prime Check](/Labs/Lab2/exercise1/1_5.png)`
+![Prime Check](/Lab2/exercise1/1_5.png)
 
 ### 6. Encrypt file with aes256.
 We use the OpenSSL command to encrypt a file with aes256 encryption.
   
-`![Prime Check](/Labs/Lab2/exercise1/1_6.png)`
+![Prime Check](/Lab2/exercise1/1_6.png)
 
 ### 7. Encrypt file with aes256 and -base64 encoding.
 We use the OpenSSL command to encrypt a file with aes256 encryption and base64 encoding.
   
-`![Prime Check](/Labs/Lab2/exercise1/1_7.png)`
+![Prime Check](/Lab2/exercise1/1_7.png)
 
 ### 8. Encrypt file with aes256, base64 encoding and PBKDF2.
 We use the OpenSSL command to encrypt a file with aes256 encryption, base64 encoding and PBKDF2.
   
-`![Prime Check](/Labs/Lab2/exercise1/1_8.png)`
+![Prime Check](/Lab2/exercise1/1_8.png)
 
 Yes, the output has changed because PBKDF2 (Password-Based Key Derivation Function 2) derive the encryption key from the passphrase, which strengthens the security of the passphrase by protecting against brute force and dictionary attacks.
 
@@ -53,11 +53,11 @@ We use the OpenSSL command to decrypt the previus encrypted file.
 
 #### Using the correct password
 
-`![Prime Check](/Labs/Lab2/exercise1/1_9_1.png)`
+![Prime Check](/Lab2/exercise1/1_9_1.png)
 
 #### Using the wrong password
 
-`![Prime Check](/Labs/Lab2/exercise1/1_9_2.png)`
+![Prime Check](/Lab2/exercise1/1_9_2.png)
 
 ### 10. Encryption with Blowfish.
 We use the OpenSSL command to encrypt and decrypt a file using Blowfish.
@@ -70,7 +70,7 @@ openssl enc -d -blowfish -in encrypted.bin
 
 #### Using the correct password I decrypt the file
 
-`![Prime Check](/Labs/Lab2/exercise1/1_10.png)`
+![Prime Check](/Lab2/exercise1/1_10.png)
 
 ### 11. Encryption with 3DES.
 We use the OpenSSL command to encrypt and decrypt a file using 3DES.
@@ -83,7 +83,7 @@ openssl enc -d -des-ede3 -in encrypted.bin
 
 #### Using the correct password I decrypt the file
 
-`![Prime Check](/Labs/Lab2/exercise1/1_11.png)`
+![Prime Check](/Lab2/exercise1/1_11.png)
 
 ### 12. Encryption with RC2.
 We use the OpenSSL command to encrypt and decrypt a file using RC2.
@@ -98,7 +98,7 @@ openssl enc -d -rc2 -in encrypted.bin
 
 #### Using the correct password I decrypt the file
 
-`![Prime Check](/Labs/Lab2/exercise1/1_12.png)`
+![Prime Check](/Lab2/exercise1/1_12.png)
 
 ## Exercise 2 - Padding (AES)
 
