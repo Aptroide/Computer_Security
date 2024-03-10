@@ -1,28 +1,38 @@
-from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
-from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives import padding
-import os
+from Crypto.Cipher import ChaCha20
+from Crypto.Random import get_random_bytes
+import binascii
 
+"""
+Python implementation of the ChaCha20 stream cipher.
+"""
+
+# Correcting the key length for ChaCha20
+def generate_valid_chacha20_key():
+    # ChaCha20 requires a 32-byte key
+    return get_random_bytes(32)
+
+# Encryption and decryption functions for ChaCha20
 def chacha20_encrypt(key, nonce, plaintext):
-    cipher = Cipher(algorithms.ChaCha20(key, nonce), mode=None, backend=default_backend())
-    encryptor = cipher.encryptor()
-    ciphertext = encryptor.update(plaintext) + encryptor.finalize()
-    return ciphertext
+    cipher = ChaCha20.new(key=key, nonce=nonce)
+    ciphertext = cipher.encrypt(plaintext)
+    return binascii.hexlify(ciphertext)
 
 def chacha20_decrypt(key, nonce, ciphertext):
-    cipher = Cipher(algorithms.ChaCha20(key, nonce), mode=None, backend=default_backend())
-    decryptor = cipher.decryptor()
-    plaintext = decryptor.update(ciphertext) + decryptor.finalize()
+    cipher = ChaCha20.new(key=key, nonce=nonce)
+    plaintext = cipher.decrypt(ciphertext)
     return plaintext
 
-if __name__ == "__main__":
-    key = os.urandom(32)  # Generate a 256-bit (32-byte) key
-    nonce = os.urandom(12)  # Generate a 96-bit (12-byte) nonce
-    nonce = nonce + b'\x00' * (16 - len(nonce))  # Pad nonce to make it 128 bits
-    plaintext = b"si se pudo burro"  # Plain text to be encrypted
+# Generating a valid key and nonce
+valid_key = generate_valid_chacha20_key()
+nonce = get_random_bytes(12)  # 96-bit nonce for ChaCha20
 
-    ciphertext = chacha20_encrypt(key, nonce, plaintext)
-    print("Ciphertext:", ciphertext.hex())
+# Example plaintext
+plaintext = b'Yachay Tech University is the best!'
 
-    decrypted_plaintext = chacha20_decrypt(key, nonce, ciphertext)
-    print("Decrypted plaintext:", decrypted_plaintext.decode())
+# Encrypt the plaintext
+ciphertext = chacha20_encrypt(valid_key, nonce, plaintext)
+print(f'Encrypted: {ciphertext}')
+
+# Decrypt the ciphertext
+decrypted = chacha20_decrypt(valid_key, nonce, binascii.unhexlify(ciphertext))
+print(f'Decrypted: {decrypted}')

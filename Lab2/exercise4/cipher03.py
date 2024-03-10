@@ -2,6 +2,10 @@ from Crypto.Cipher import DES
 from Crypto.Util.Padding import unpad
 import binascii
 
+"""
+Modify the cipher02.py to decryption a entry ciphertext with his password.
+"""
+
 def decrypt(ciphertext, key):
     cipher = DES.new(key, DES.MODE_ECB)
     ciphertext = binascii.unhexlify(ciphertext)
@@ -10,7 +14,7 @@ def decrypt(ciphertext, key):
     return plaintext.decode()
 
 if __name__ == "__main__":
-    ciphertext = input("Enter ciphertext (in hexadecimal): ")
+    ciphertext = input("Enter ciphertext: ")
     password = input("Enter password: ")
 
     # Adjust key length

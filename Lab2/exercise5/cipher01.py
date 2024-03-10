@@ -4,6 +4,12 @@ from cryptography.hazmat.primitives import padding
 import hashlib
 import binascii
 
+"""
+AES ECB decryption
+Modify version cipher01.py, so that you can enter the cipher text, and an encryption key, 
+and the code will decrypt to provide the result. 
+"""
+
 def decrypt(ciphertext, key, mode):
     method = algorithms.AES(key)
     cipher = Cipher(method, mode, default_backend())

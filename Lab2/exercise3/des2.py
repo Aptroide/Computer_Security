@@ -3,6 +3,10 @@ from Crypto.Util.Padding import pad, unpad
 from secrets import token_bytes
 import binascii
 
+"""
+Encrypt and decrypt a message using DES with different padding schemes
+"""
+
 # Generate a random DES key
 key = token_bytes(8)
 

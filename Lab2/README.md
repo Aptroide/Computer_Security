@@ -143,6 +143,8 @@ The output is the original plaintext because the ciphertext was decrypted using 
 
 ## Exercise 4 - Python Coding (Encrypting)
 
+- `cipher0.py`: Python script so that you can enter a string and the program will show the cipher text.
+
 - `cipher01.py`: Python script to encryption and decryption using AES and PKCS7.
 
 
@@ -162,10 +164,10 @@ The output is the original plaintext because the ciphertext was decrypted using 
 | YachayTech | university | 17fad29a1f1bedd0873e859d94fc781f          |
 | Ecuador    | emerald    | e55443561aae3fde                          |
 
-- `cipher02.py`: Python script to encryption and decryption using DES but the entry is the ciphertext and the password.
+- `cipher03.py`: Python script to encryption and decryption using DES but the entry is the ciphertext and the password.
 
 ## Exercise 5 - Python Coding (Decrypting)
-- `cipher02.py`: Python script to decryption using AES.
+- `cipher01.py`: Python script to decryption using AES.
 
 | CMS Cipher (256-bit AES ECB) | Key      | Plain text  
 |------------------------------|----------|------------|
@@ -176,7 +178,7 @@ The output is the original plaintext because the ciphertext was decrypted using 
 
 - `cipher02.py`: Python script to encryption and decryption using DES.
 
-- `cipher03.py`: Python script to encryption and decryption using 256-bit AES ECB and base64.
+- `cipher03.py`: Python script to decryption using 256-bit AES ECB of a base64 string.
 
 | CMS Cipher (256-bit AES ECB) | Key      | Plain text  
 |------------------------------|----------|------------|
@@ -186,8 +188,20 @@ The output is the original plaintext because the ciphertext was decrypted using 
 | 5I71KpfT6RdM/xhUJ5IKCQ== | 123456   | mexico  |
 
 ## Exercise 6 - Catching exceptions (Decrypting)
-- `cipher01.py`: Python script to try decryption '1jDmCTD1IfbXbyyHgAyrdg==' using 256-bit AES ECB and base64.
+- `cat_exc.py`: Python script to try decryption '1jDmCTD1IfbXbyyHgAyrdg==' using 256-bit AES ECB and base64.
 
 The password is 'hello'. 
 
 ## Exercise 7 - Stream Ciphers
+
+`cha.py`: Python script to implement the ChaCha20 stream cipher.
+
+`cha2.py`: Python script to decryp the ChaCha20 stream cipher with the key 'qwerty' and a nonce of `0x0000000000000000`.
+
+- `e81461e995` decrypted to `apple`
+- `eb057fe49e34` decrypted to `banana`
+- `e8127ee691315e` decrypted to `avocado`
+- `fb0562f592304385d4` decrypted to `raspberry`
+
+
+`rc4.py`: Python script to implement the RC4 stream cipher. 

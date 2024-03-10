@@ -1,36 +1,54 @@
-from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
-from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives import padding
-import os
+import binascii
 
-def chacha20_encrypt(key, nonce, plaintext):
-    # Create a ChaCha20 cipher object
-    cipher = Cipher(algorithms.ChaCha20(key, nonce), mode=None, backend=default_backend())
-    # Create an encryptor object
-    encryptor = cipher.encryptor()
-    # Encrypt the plaintext
-    ciphertext = encryptor.update(plaintext) + encryptor.finalize()
-    return ciphertext
+"""
+RC4 encryption and decryption
+"""
 
-def chacha20_decrypt(key, nonce, ciphertext):
-    # Create a ChaCha20 cipher object
-    cipher = Cipher(algorithms.ChaCha20(key, nonce), mode=None, backend=default_backend())
-    # Create a decryptor object
-    decryptor = cipher.decryptor()
-    # Decrypt the ciphertext
-    plaintext = decryptor.update(ciphertext) + decryptor.finalize()
-    return plaintext
+class RC4:
+    def __init__(self, key):
+        self.state = list(range(256))  # Initialize state array
+        self.key = key
+        self.init_ksa()  # Key-scheduling algorithm
 
-if __name__ == "__main__":
-    key = os.urandom(32)  # Generate a 256-bit (32-byte) key
-    nonce = os.urandom(12)  # Generate a 96-bit (12-byte) nonce
-    nonce = nonce + b'\x00' * (16 - len(nonce))  # Pad nonce to make it 128 bits
-    plaintext = b"si se pudo burro"  # Plain text to be encrypted
+    def init_ksa(self):
+        j = 0
+        for i in range(256):
+            j = (j + self.state[i] + self.key[i % len(self.key)]) % 256
+            self.state[i], self.state[j] = self.state[j], self.state[i]
 
-    # Encrypt the plaintext
-    ciphertext = chacha20_encrypt(key, nonce, plaintext)
-    print("Ciphertext:", ciphertext.hex())
+    def stream_generator(self):
+        i = j = 0
+        while True:
+            i = (i + 1) % 256
+            j = (j + self.state[i]) % 256
+            self.state[i], self.state[j] = self.state[j], self.state[i]
+            K = self.state[(self.state[i] + self.state[j]) % 256]
+            yield K
 
-    # Decrypt the ciphertext
-    decrypted_plaintext = chacha20_decrypt(key, nonce, ciphertext)
-    print("Decrypted plaintext:", decrypted_plaintext.decode())
+    def encrypt_decrypt(self, data):
+        # The same function can be used for encryption and decryption.
+        return bytes([_ ^ next(self.stream) for _ in data])
+
+# Function to demonstrate RC4 encryption and decryption
+def rc4_encrypt_decrypt():
+    key = b'hello'  # RC4 key
+    plaintext = b'Last time we used the key "hello" to encrypt and decrypt a message'
+    
+    # Encrypt
+    rc4_cipher_encrypt = RC4(key)
+    rc4_cipher_encrypt.stream = rc4_cipher_encrypt.stream_generator()
+    ciphertext = rc4_cipher_encrypt.encrypt_decrypt(plaintext)
+    
+    # Decrypt
+    rc4_cipher_decrypt = RC4(key)
+    rc4_cipher_decrypt.stream = rc4_cipher_decrypt.stream_generator()
+    decrypted = rc4_cipher_decrypt.encrypt_decrypt(ciphertext)
+    
+    return binascii.hexlify(ciphertext), decrypted
+
+# Run the RC4 encryption and decryption
+corrected_rc4_ciphertext, corrected_rc4_decrypted = rc4_encrypt_decrypt()
+
+# print the results
+print(f'Encrypted: {corrected_rc4_ciphertext}')
+print(f'Decrypted: {corrected_rc4_decrypted}')

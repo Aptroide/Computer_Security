@@ -1,37 +1,38 @@
-from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
-from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
-from cryptography.hazmat.primitives import hashes
+
 import binascii
+from Crypto.Cipher import ChaCha20
 
-def chacha20_decrypt(password, nonce, cipher_stream):
-    # Derive the key using PBKDF2
-    kdf = PBKDF2HMAC(
-        algorithm=hashes.SHA256(),
-        length=32,  # Key length in bytes (256 bits)
-        salt=nonce,
-        iterations=100000,  # Number of iterations
-        backend=default_backend()
-    )
-    key = kdf.derive(password)
+"""
+Python script to decryp the ChaCha20 stream cipher with the key 'qwerty' and a nonce of `0x0000000000000000`
+"""
 
-    # Create the Cipher object and decrypt the cipher stream
-    cipher = Cipher(algorithms.ChaCha20(key, nonce), mode=None, backend=default_backend())
-    decryptor = cipher.decryptor()
-    plaintext = decryptor.update(cipher_stream) + decryptor.finalize()
+cipher_streams = [
+    'e81461e995',
+    'eb057fe49e34',
+    'e8127ee691315e',
+    'fb0562f592304385d4'
+]
 
+# The nonce is provided as a hexadecimal string, it needs to be converted to bytes
+nonce = binascii.unhexlify('0000000000000000')
+
+# Pad the key 'qwerty' with null bytes up to 32 bytes
+key = 'qwerty'.encode().ljust(32, b'\0')
+
+def chacha20_decrypt_corrected(key, nonce, ciphertext):
+    cipher = ChaCha20.new(key=key, nonce=nonce)
+    plaintext = cipher.decrypt(ciphertext)
     return plaintext
 
-if __name__ == "__main__":
-    # Password (as bytes)
-    password = b"qwerty"
-    # Nonce (as bytes)
-    nonce = b"\x00" * 16  # 128 bits (16 bytes)
-    # Cipher stream (as bytes)
-    cipher_stream = bytes.fromhex("e81461e995")  # Provided cipher stream
+# Decryption function that interprets the plaintext as ASCII strings
+def decrypt_chacha20_streams(key, nonce, cipher_streams):
+    decrypted_texts = []
+    for hex_stream in cipher_streams:
+        ciphertext = binascii.unhexlify(hex_stream)
+        decrypted_text = chacha20_decrypt_corrected(key, nonce, ciphertext)
+        decrypted_texts.append(decrypted_text.decode('ascii'))
+    return decrypted_texts
 
-    # Decrypt the cipher stream to get the plaintext
-    plaintext = chacha20_decrypt(password, nonce, cipher_stream)
-
-    # Print the plaintext as a byte sequence
-    print("Decrypted plaintext:", plaintext)
+# Decrypting the given cipher streams
+decrypted_fruits = decrypt_chacha20_streams(key, nonce, cipher_streams)
+print(decrypted_fruits)

@@ -3,6 +3,11 @@ from Crypto.Util.Padding import pad, unpad
 import sys
 import binascii
 
+"""
+Using DES.
+Given the plaintext and the password, the code will generate the ciphertext.
+"""
+
 def encrypt(plaintext, key):
     cipher = DES.new(key, DES.MODE_ECB)
     padded_plaintext = pad(plaintext.encode(), DES.block_size)

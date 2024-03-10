@@ -1,6 +1,12 @@
 from Crypto.Cipher import DES
 import binascii
 
+"""
+DES ECB decryption
+Modify version cipher02.py, so that you can enter the cipher text, and an encryption key, 
+and the code will decrypt to provide the result. But it doesnt works :( the pad is always wrong
+"""
+
 def decrypt(ciphertext, key):
     cipher = DES.new(key, DES.MODE_CBC)
     ciphertext = binascii.unhexlify(ciphertext)

@@ -3,7 +3,11 @@ from cryptography.hazmat.primitives import padding
 from cryptography.hazmat.backends import default_backend
 import hashlib
 import base64
-import binascii
+
+"""
+Uploading the code cipher01.py to take a cipher string in Base-64 and
+converts it to a hex string and then decrypts it.
+"""
 
 def encrypt(plaintext, key, mode):
     method = algorithms.AES(key)

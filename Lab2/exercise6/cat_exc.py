@@ -12,6 +12,11 @@ def encrypt(plaintext, key, mode):
     ct = encryptor.update(plaintext) + encryptor.finalize()
     return ct
 
+"""
+Python program which will try various keys for a cipher
+text input, and show the decrypted text. 
+"""
+
 def decrypt(ciphertext, key, mode):
     method = algorithms.AES(key)
     cipher = Cipher(method, mode, default_backend())

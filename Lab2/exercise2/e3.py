@@ -1,7 +1,9 @@
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad
 from Crypto.Random import get_random_bytes
-
+""" 
+    Encrypts a plaintext using AES in CBC mode with a given key and multiple padding scheme.
+"""
 def encrypt_with_padding(plaintext, key, padding_scheme):
     cipher = AES.new(key, AES.MODE_CBC)
     if padding_scheme == 'pkcs7':

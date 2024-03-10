@@ -3,6 +3,10 @@ from Crypto.Cipher import AES
 from Crypto.Random import get_random_bytes
 from Crypto.Util.Padding import unpad
 
+"""
+AES encryption and decryption with different padding styles
+"""
+
 # Plain text on UTF-8 or ASCII format
 plaintext = b'dont do the labs at the end'
 key = get_random_bytes(32)  # AES-256 key (32 bytes)
