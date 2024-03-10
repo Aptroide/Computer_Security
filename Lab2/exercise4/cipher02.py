@@ -24,7 +24,7 @@ if __name__ == "__main__":
     plaintext = sys.argv[1]
     password = sys.argv[2]
 
-    # Ajustar la longitud de la clave
+    # Adjust the length of the key to 8 bytes
     key = password.ljust(8)[:8].encode()
 
     print("Before padding:", plaintext)

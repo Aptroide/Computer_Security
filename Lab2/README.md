@@ -108,22 +108,38 @@ Cryptographic libraries have been installed to support AES-256 encryption.
 ### 2. AES Block Size and Hex Characters
 - Block size (bytes): the block size for AES is always 16 bytes, regardless of the key size. The key size (256 bits) just determines the number of rounds in the encryption process.
 
-- Number of hex characters for block size: The block size for AES is 16 bytes. When represented in hexadecimal, each byte is represented by two hex characters. Therefore, the block size for AES is represented by 32 hex characters. We see a proof on `e1.py`.
+- Number of hex characters for block size: The block size for AES is 16 bytes. When represented in hexadecimal, each byte is represented by two hex characters. Therefore, the block size for AES is represented by 32 hex characters. We see a proof on `e2.py`.
 
 ### 3. Implementation of AES-256 Encryption with Different Padding Schemes
 - `e3.py`: Python script to encrypt data using AES-256 with various padding schemes.
-
-
-### 4. Encryption and Decryption Tests
-- `e4.py`: Python script to encryption and decryption tests have been performed using sample data with the following padding schemes:
 
 - PKCS#7 Padding
 - ANSI X.923 Padding
 - ISO/IEC 7816-4 Padding
 
+### 4. Encryption and Decryption Tests
+- `e4.py`: Python script to encryption and decryption tests have been performed using sample data with the following padding schemes and a random key.
+
 The output is the original plaintext because the ciphertext was decrypted using the padding scheme used to encrypt it
 
-<!-- TODO ## Exercise 3 - Padding (DES) -->
+## Exercise 3 - Padding (DES)
+
+### 1. DES Block Size and Hex Characters
+- Block size (bytes): the block size for DES is 8 bytes.
+
+- Number of hex characters for block size: The block size for DES is 16 bytes. When represented in hexadecimal, each byte is represented by two hex characters. Therefore, the block size for DES is represented by 32 hex characters.
+
+### 3. Implementation of DES Encryption with Different Padding Schemes
+- `des.py`: Python script to encrypt data using DES with various padding schemes.
+
+    - PKCS#7 Padding
+    - ANSI X.923 Padding
+    - ISO/IEC 7816-4 Padding
+
+### 4. Encryption and Decryption Tests
+- `des2.py`: Python script to encryption and decryption tests have been performed using sample data with the following padding schemes and a random key.
+
+The output is the original plaintext because the ciphertext was decrypted using the padding scheme used to encrypt it
 
 ## Exercise 4 - Python Coding (Encrypting)
 
