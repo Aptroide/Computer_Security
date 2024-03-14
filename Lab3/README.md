@@ -41,7 +41,7 @@
    c) **Secure the private key with 128-bit AES encryption:**
 
     ```bash
-    openssl rsa -in private.pem -aes128 -out key_aes128.pem
+    openssl rsa -in private.pem -aes128 -out key3des.pem
     ```
 
    d) **Export the public key:**
