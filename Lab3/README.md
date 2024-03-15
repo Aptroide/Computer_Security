@@ -181,7 +181,7 @@
     - Encryption - RSA: C = 83^7 mod 143 = 8
     - Decryption - RSA: P = 8^103 mod 143 = 83
 
-    proof on `rsaencryot.py`.
+    proof on `exercise1/rsaencryot.py`.
 
 8. **RSA Decryption Exercise**
 
@@ -192,4 +192,4 @@
 1. **Generate an RSA key pair** complete process of encryption and decryption of the message m using the ElGamal algorithm
     ![ElGamal Cryptosystem](/Lab3/exercise2/2.png)
 
-2. **Generate an RSA key pair** Python application for ElGamal encryption and decryption on `elgamal.py`
+2. **Generate an RSA key pair** Python application for ElGamal encryption and decryption on `exercise2/elgamal.py`
