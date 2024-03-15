@@ -181,7 +181,7 @@
     - Encryption - RSA: C = 83^7 mod 143 = 8
     - Decryption - RSA: P = 8^103 mod 143 = 83
 
-    proof on `exercise1/rsaencryot.py`.
+    proof on `exercise1/rsaencryot.py`
 
 8. **RSA Decryption Exercise**
 
@@ -193,3 +193,10 @@
     ![ElGamal Cryptosystem](/Lab3/exercise2/2.png)
 
 2. **Generate an RSA key pair** Python application for ElGamal encryption and decryption on `exercise2/elgamal.py`
+
+# Exercise 3: Diffie-Hellman key exchange
+
+1. **Diffie-Hellman key exchange** complete process of encryption and decryption of the message m using the ElGamal algorithm
+    ![ElGamal Cryptosystem](/Lab3/exercise3/1.png)
+
+2. **Diffie-Hellman key exchange** Python application for Diffie-Hellman key exchangeon `exercise3/dh.py`
