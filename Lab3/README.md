@@ -186,3 +186,10 @@
 8. **RSA Decryption Exercise**
 
     Given Bob's public key and the ciphertext we cannot perform RSA decryption and know the plaintext message that Bob has been sent.
+
+# Exercise 2: ElGamal Cryptosystem
+
+1. **Generate an RSA key pair** complete process of encryption and decryption of the message m using the ElGamal algorithm
+    ![ElGamal Cryptosystem](/Lab3/exercise2/2.png)
+
+2. **Generate an RSA key pair** Python application for ElGamal encryption and decryption on `elgamal.py`
