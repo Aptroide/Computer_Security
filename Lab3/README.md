@@ -200,3 +200,80 @@
     ![ElGamal Cryptosystem](/Lab3/exercise3/1.png)
 
 2. **Diffie-Hellman key exchange** Python application for Diffie-Hellman key exchangeon `exercise3/dh.py`
+
+# Exercise 5: Choosing an Elliptic Curve for ECC
+
+1. **OpenSSL (ECC)** 
+
+    a) First we need to generate a private key with:
+    ```bash
+    openssl ecparam -name secp256k1 -genkey -out priv.pem
+    ```
+
+    b) We can view the details of the ECC parameters used with
+    ```bash
+    openssl ecparam -in priv.pem -text -param_enc explicit -noout
+    ```
+    ![OpenSSL (ECC)](/Lab3/exercise5/5_1.png)
+
+    Values of interest:
+    - Prime (last two bytes): A: 0
+    - Prime (last two bytes): B: 7 (0x7)
+    - Generator (last two bytes): d4:b8 
+    - Order (last two bytes): 41:41
+
+    c) Generating a public key based on private key with:
+    ```bash
+    openssl ec -in priv.pem -text -noout
+    openssl ec -in priv.pem -pubout -out public.pem
+    ```
+    ![OpenSSL (ECC)](/Lab3/exercise5/5_2.png)
+
+    - The private key has 256 bits and 32 bytes
+    - The public key has 256 bits and 32 bytes
+
+    This results came from:
+    ```bash
+    openssl ec -in priv.pem -text -noout 
+    openssl ec -pubin -in public.pem -text -noout
+    ```
+    ![OpenSSL (ECC)](/Lab3/exercise5/5_3.png)
+
+    d) Displaying th list of available elliptic curves (EC) in OpenSSL
+    ```bash
+    openssl ecparam -list_curves
+    ```
+    ![OpenSSL (ECC)](/Lab3/exercise5/5_4.png)
+
+    Outline three curves supported:
+    - c2pnb304w1: X9.62 curve over a 304 bit binary field
+    - c2tnb359v1: X9.62 curve over a 359 bit binary field
+    - c2pnb368w1: X9.62 curve over a 368 bit binary field
+
+    e) Lets select two other curves:
+    ```bash
+    openssl ecparam -name secp128r1 -genkey -out priv.pem
+    openssl ecparam -in priv.pem -text -param_enc explicit -noout
+    ```
+    ![OpenSSL (ECC)](/Lab3/exercise5/5_5.png)
+
+    ```bash
+    openssl ecparam -name secp521r1 -genkey -out priv.pem
+    openssl ecparam -in priv.pem -text -param_enc explicit -noout
+    ```
+    ![OpenSSL (ECC)](/Lab3/exercise5/5_6.png)
+
+    - Diferences of secp128k1, secp256k1 and secp512r1.
+
+    | Curve      | Prime Number (p) Size | Base Point (G) Size | 
+    |------------|-------------------------|---------------------|
+    | secp128k1  | 128 bits                | 256 bits            | 
+    | secp256k1  | 256 bits                | 512 bits            | 
+    | secp512r1  | 512 bits                | 1024 bits           | 
+
+    - The naming of elliptic curves provides insights into their characteristics, specially gives the size of the prime number used in their definition.
+
+2. **Points of an elliptic curve using the libnum library** 
+
+    a) On `exercise5/ecc.py` we create an elliptic curve with y^2 = x^3 + 7, and with a prime number of 89, then we generate the first five (x,y) points for the finite field elliptic curve. Those are:
+    - (1, 39), (1, 50), (3, 37), (3, 52), (4, 31)
