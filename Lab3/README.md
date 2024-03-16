@@ -201,6 +201,33 @@
 
 2. **Diffie-Hellman key exchange** Python application for Diffie-Hellman key exchangeon `exercise3/dh.py`
 
+# Exercise 4: Elliptic Curves over Finite Fields
+
+1. **Elliptic Curve Order and Cofactor:**
+   
+    To answer a) anf b) we use:
+    ```bash
+    openssl ecparam -name secp256k1 -param_enc explicit -text
+    ```
+    **a)** Order of the secp256k1 elliptic curve: 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141
+   
+    **b)** Cofactor of the secp256k1 elliptic curve: 1
+
+    **c)** Cofactor of the Curve25519 elliptic curve: 8
+
+    **d)** Cofactor of the Curve448 elliptic curve: 4
+
+    **e)** Order of the Curve25519 elliptic curve: 2^252 + 0x14DEF9DEA2F79CD65812631A5CF5D3ED
+
+2. **Multiplication of EC Points:**
+
+3. **Point Addition:**
+    (5,8) + (12,6) = (15, 13)
+    ![Point Addition](/Lab3/exercise4/1.png)
+
+4. **Point Multiplication:**
+    We use `exercise4/da.py` to reach that P3 = (12,6)
+
 # Exercise 5: Choosing an Elliptic Curve for ECC
 
 1. **OpenSSL (ECC)** 
