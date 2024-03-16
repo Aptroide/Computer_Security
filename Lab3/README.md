@@ -223,7 +223,7 @@
 
 3. **Point Addition:**
     (5,8) + (12,6) = (15, 13)
-    ![Point Addition](/Lab3/exercise4/1.png)
+    ![Point Addition](/Lab3/exercise4/4_1.png)
 
 4. **Point Multiplication:**
     We use `exercise4/da.py` to reach that P3 = (12,6)
