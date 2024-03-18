@@ -18,11 +18,13 @@
 
     `/Lab4/exercise1/hash.py` python script solution.
 
-    - MD5 hex chars: 32 hex characters.
-    - SHA-1 hex chars: 40 hex characters.
-    - SHA-256 hex chars: 64 hex characters.
-    - SHA-384 hex chars: 96 hex characters.
-    - SHA-512 hex chars: 128 hex characters.
+    | Hash Type      | hex characters | 
+    |----------------|-----------|
+    | MD5      | 32  |
+    | SHA-1    | 40  |
+    | SHA-256  | 64  |
+    | SHA-384  | 96  |
+    | SHA-512  | 128 |
 
 4. **Determining the plain-text passwords for given hash entries**
 
@@ -51,7 +53,7 @@
 
 5. **Identifying valid MD5 signatures**
 
-    The file 2.txt have been modified, we compare de hash using `/Lab4/exercise1/compare.py`
+    The file 2.txt have been modified, we compare de hash using `/Lab4/exercise1/compare.py` and we use the following commands to create the MD5 hash:
 
      ```bash
     md5sum 1.txt
@@ -88,6 +90,14 @@
     ```bash
     hashcat -m 0 hash1 words
     ```
+
+    | Hash      | Password | 
+    |-------------------------|-----------|
+    | 232DD5D7274E0D662F36C575A3BD634C  | napier   |
+    | 5F4DCC3B5AA765D61D8327DEB882CF99  | password  |
+    | 6D5875265D1979BDAD1C8A8F383C5FF5  | Ankle123  |
+    | 04013F78ACCFEC9B673005FC6F20698D  | inkwell |
+
     ![hashcat crack](/Lab4/exercise2/img/2_2.png)
     ![hashcat crack](/Lab4/exercise2/img/2_3.png)
 
@@ -122,13 +132,12 @@
     ![hashcat crack](/Lab4/exercise2/img/2_7.png)
     ![hashcat crack](/Lab4/exercise2/img/2_8.png)
 
-5. **Attempt to crack provided NTLM hash**
+5. **Demonstrate the capability of Hashcat when cracking a NTLM hash**
 
     Sice we know that the password is `help`, we add `?l?l?l?l` to simplify the search.
 
     ```bash
     hashcat -m 1000 -a 0 0333c27eb4b9401d91fef02a9f74840e ?l?l?l?l
-
     ```
 
     | Hash      | Password | 
