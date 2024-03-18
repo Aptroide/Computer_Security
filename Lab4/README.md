@@ -137,7 +137,7 @@
     Sice we know that the password is `help`, we add `?l?l?l?l` to simplify the search.
 
     ```bash
-    hashcat -m 1000 -a 0 0333c27eb4b9401d91fef02a9f74840e ?l?l?l?l
+    hashcat -m 1000 -a 0 0333c27eb4b9401d91fef02a9f74840e ?l?l?l?lgit 
     ```
 
     | Hash      | Password | 
