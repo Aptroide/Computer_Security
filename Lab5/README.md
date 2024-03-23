@@ -445,3 +445,23 @@ Using `exercise6/cert_crack/pfx_multicrack2.py`:
 - **country06.pfx**: france
 
 ![ecc](/Lab5/exercise6/img/3.png)
+
+## Exercise 7: Setting up a certificate on a Web site
+
+Now we will enable HTTPs on an Apache Web Server, and install a digital certificate. Execute the following commands:
+
+```bash
+sudo a2enmod ssl
+service apache2 restart
+openssl genrsa -out ca.key 2048
+sudo openssl req -nodes -new -key ca.key -out ca.csr
+sudo openssl x509 -req -days 365 -in ca.csr -signkey ca.key -out ca.crt
+sudo mkdir /etc/apache2/ssl
+sudo cp ca.crt ca.key ca.csr /etc/apache2/ssl/
+sudo nano /etc/apache2/sites-enabled/000-default.conf
+sudo /etc/init.d/apache2 restart
+```
+
+![ecc](/Lab5/exercise7/1.png)
+![ecc](/Lab5/exercise7/2.png)
+![ecc](/Lab5/exercise7/3.png)
