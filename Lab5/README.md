@@ -111,22 +111,31 @@ Create your RSA key pair with:
 ```bash
 openssl genrsa -out ca.key 2048
 ```
-- **How many years will the certificate be valid for?**
 
 Next create a self-signed root CA certificate ca.crt for **My Global Corp**:
 ```bash
 openssl req -new -x509 -days 1826 -key ca.key -out ca.crt
 ```
-- **Wich the details you have entered:**
+
+- **How many years will the certificate be valid for?** 5 years (1826 days)
+- **Wich the details have you entered:**
+    - Country Name.
+    - State or Province Name (full name).
+    - Locality Name. 
+    - Organization Name. 
+    - Organizational Unit Name. 
+    - Common Name.   
+    - Email Address.
+![My global Corp](/Lab5/exercise2/img/3.png)
 
 **B.3**  
 From your Home folder, open up ca.crt and view the details of the certificate.
-- **Which Key Algorithm has been used:**
-- **Which hashing methods have been used:**
-- **When does the certificate expire:**
-- **Who is it verified by:**
-- **Who has it been issued to:**
-
+- **Which Key Algorithm has been used:** RSA
+- **Which hashing methods have been used:** 
+- **When does the certificate expire:** 03/23/29
+- **Who is it verified by:** Global Corp Inc.
+- **Who has it been issued to:** Global Corp Inc.
+![My global Corp](/Lab5/exercise2/img/4.png)
 **B.4**  
 Create a subordinate CA (**My Little Corp**) which will be used for the signing of the certificate. Generate the key:
 ```bash
@@ -140,22 +149,25 @@ Create a certificate from the subordinate CA signed by the root CA:
 ```bash
 openssl x509 -req -days 730 -in ia.csr -CA ca.crt -CAkey ca.key -set_serial 01 -out ia.crt
 ```
+![My Little Corp](/Lab5/exercise2/img/5.png)
+![My Little Corp](/Lab5/exercise2/img/6.png)
 
 - **View the newly created certificate.**
-- **When does it expire:**
-- **Who is the subject of the certificate:**
-- **Which is their country:**
-- **Who signed the certificate:**
-- **Which is their country:**
-- **What is the serial number of the certificate?**
-- **Check the serial number for the root certificate. What is its serial number?**
+- **When does it expire:** 03/23/26
+- **Who is the subject of the certificate:** My Little Corp
+- **Which is their country:** EC
+- **Who signed the certificate:** Global Corp Inc. (My Global Corp)
+- **Which is their country:** EC
+- **What is the serial number of the certificate?** 01
+- **Check the serial number for the root certificate. What is its serial number?** 3F 30 32 43 18 E9 6A 88 76 93 C6 94 10 4E C0 DE 61 40 46 6F
 
 **B.5**  
 Convert the certificate to a PKCS12 file to digitally sign files and verify signatures:
 ```bash
 openssl pkcs12 -export -out ia.p12 -inkey ia.key -in ia.crt -chain -CAfile ca.crt
 ```
-- **Can you view ia.p12 in a text editor?**
+- **Can you view ia.p12 in a text editor?** Yes, but its unreadable.
+![My Little Corp](/Lab5/exercise2/img/7.png)
 
 **B.6**  
 The crt format is encoded in binary. To export to a Base64 format, we can use DER:
@@ -167,8 +179,13 @@ And for My Little Corp:
 openssl x509 -inform pem -outform pem -in ia.crt -out ia.cer
 ```
 
-- **View each of the output files in a text editor (ca.cer and then ia.cer). What can you observe from the format:**
+- **View each of the output files in a text editor (ca.cer and then ia.cer). What can you observe from the format:** files are readable, we can inspect the certificate's content in the files using a text editor. 
 - **Which are the standard headers and footers used?**
+    - **Headers:** -----BEGIN CERTIFICATE-----
+    - **Footers:** -----END CERTIFICATE-----
+
+![ca cer](/Lab5/exercise2/img/8.png)
+![ia cer](/Lab5/exercise2/img/9.png)
 
 **B.7**  
 Run the following program to verify its operation:
@@ -196,6 +213,9 @@ print("City/locality:", components.get('L', ''))
 print("State/province:", components.get('ST', ''))
 print("Country:", components.get('C', ''))
 ```
+- `exercise2/b_07.py` is a Python script that loads a certificate request (CSR) in PEM format, extracts information from it, and prints out details about the CSR.
+
+![cer info python](/Lab5/exercise2/img/10.png)
 
 **Web link (CSR):**  
 [CSR](https://asecuritysite.com/encryption/csr)
@@ -223,6 +243,16 @@ rQMegvzXXEIO3xEGrBi5/wXJxsawRLcM3ZSGPu/Ws950oM5Ahn8K8HBdKubQ
 
 -----END NEW CERTIFICATE REQUEST-----
 
+- Key algorithm: RSA
+- Key size: 2048
+- Common name:
+- Organisation:
+- Organisation unit:
+- City/locality:
+- State/province
+- Country:
+
+
 -----BEGIN NEW CERTIFICATE REQUEST-----
 
 MIIDPzCCAqgCAQAwZDELMAkGA1UEBhMCQ04xCzAJBgNVBAgTAmJqMQswCQYDVQQH
@@ -246,6 +276,15 @@ NFBQQMoW94LqrG/kuIQtjwVdZA==
 
 -----END NEW CERTIFICATE REQUEST-----
 
+- Key algorithm: RSA
+- Key size: 1024
+- Common name:
+- Organisation:
+- Organisation unit:
+- City/locality:
+- State/province
+- Country:
+
 -----BEGIN CERTIFICATE REQUEST-----
 
 MIIByjCCATMCAQAwgYkxCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpDYWxpZm9ybmlh
@@ -260,3 +299,12 @@ Q0uA0aVog3f5iJxCa3Hp5gxbJQ6zV6kJ0TEsuaaOhEko9sdpCoPOnRBm2i/XRD2D
 6iNh8f8z0ShGsFqjDgFHyF3o+lUyj+UC6H1QW7bn
 
 -----END CERTIFICATE REQUEST-----
+
+- Key algorithm: RSA
+- Key size: 1024
+- Common name:
+- Organisation:
+- Organisation unit:
+- City/locality:
+- State/province
+- Country:
