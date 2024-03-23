@@ -9,7 +9,8 @@
 /Lab1.pdf
 /Lab2.pdf
 /point.py 
-/secp256k1.py
+/secp256k1.pygit config --get user.email
+git config --get user.name
 /.gitignore
 /Lab 5- Computer Security- Trust and Digital Certificates.docx
 /Lab 5- Computer Security- Trust and Digital Certificates.pdf

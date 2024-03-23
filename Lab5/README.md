@@ -31,9 +31,9 @@ Open-up the ZIP file for the certificate (Certificate 3) and view the DER file.
     - The signature for the signer.
 - **What is the size of the public key:** 256 bits
 - **Which hashing method has been used:** SHA1
-![googel cer info](/Lab5/exercise1/2.png)
+![googel cer info](/Lab5/exercise1/img/2.png)
 - **Is the certificate trusted on your system:** [No]
-![googel trusted cer](/Lab5/exercise1/1.png)
+![googel trusted cer](/Lab5/exercise1/img/1.png)
 
 **A.3** 
 Make a connection to the www.live.com Web site:
@@ -41,25 +41,25 @@ Make a connection to the www.live.com Web site:
 openssl s_client -connect www.live.com:443
 ```
 - **Can you identify the certificate chain?** Yes
-![cer chain](/Lab5/exercise1/3.png)
+![cer chain](/Lab5/exercise1/img/3.png)
 
 - **What is the subject on the certificate?** outlook.live.com
 - **Who is the issuer on the certificate?** DigiCert Cloud Services CA-1
-![cer chain](/Lab5/exercise1/4.png)
+![cer chain](/Lab5/exercise1/img/4.png)
 
 
 **A.4** 
 Google moved in July 2018 to mark sites as being insecure if they did not have a match between their digital certificate and the site. First open a browser and see if you can access testfire.net (you can try both https and http for the connection). 
 - Using http:
-![http](/Lab5/exercise1/5.png)
+![http](/Lab5/exercise1/img/5.png)
 - Using https:
-![https](/Lab5/exercise1/6.png)
+![https](/Lab5/exercise1/img/6.png)
 - **Run a scan from https://www.ssllabs.com/ on testfire.net. What do you observe from the result?**
 - **What is the SSLLabs rating on this site? Is it "A", "B", "C", "D", "E" or "F"?** If trust issues are ignored: B
 
 - **What does a “T” rating identify?** It means that the site name doesn't match with the name on the certificate.
 - **Can you locate another "T" rated site?** Yes, `diankpi.com` is a "T" rated site.
-![T](/Lab5/exercise1/7.png)
+![T](/Lab5/exercise1/img/7.png)
 
 **A.5** 
 Which the certificates in A.2, for Example 2 to Example 6. Complete the following table:
@@ -83,7 +83,7 @@ Now use openssl to read the certificates:
 ```bash
 openssl x509 -inform der -in [certname] -noout -text
 ```
-![T](/Lab5/exercise1/8.png)
+![T](/Lab5/exercise1/img/8.png)
 
 ## Exercise 2: Creating Certificates
 
@@ -93,7 +93,7 @@ Create your own certificate from:
 [Create Certificate](http://asecuritysite.com/encryption/createcert)
 
 Add in your own details.
-![certificate](/Lab5/exercise2/1.png)
+![certificate](/Lab5/exercise2/img/1.png)
 
 - **View the certificate and verify some of the details on the certificate.**
 
@@ -102,7 +102,7 @@ Add in your own details.
 |1|Yachay|2024-03-23 to 2025-03-23|512 bits |IT CA 08| Yachay Tech | RSA |
 
 - **Can you view the DER file?** No
-![certificate](/Lab5/exercise2/2.png)
+![certificate](/Lab5/exercise2/img/2.png)
 
 We have a root certificate authority of My Global Corp which is based in Washington US and the administrator is admin@myglobalcorp.com and we are going to issue a certificate to My Little Corp which is based in Glasgow UK and the administrator is admin@mylittlecorp.com.
 
