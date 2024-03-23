@@ -401,3 +401,47 @@ Also differentiate between keys which every user has to store and keys which are
    - **Keys each user must store:** One private key and 999 public keys of the other users if they wish to communicate with every other user in the network.
    - **Collectively necessary keys:** 1000 private keys and 1000 public keys are necessary for the entire network.
 
+## Exercise 5: Key Establishment
+
+
+## Exercise 6: Cracking Certificates
+
+`exercise6/cert_crack/pfx_crack.py` is a Python script to try various passwords on the certificate pfx.
+    - **fred.pfx**: password = apples.
+    ![ecc](/Lab5/exercise6/img/1.png)
+
+The files bill01.pfx, bill02.pfx … bill18.pfx have a password which are fruits. Can you determine the fruits used
+
+Using `exercise6/cert_crack/pfx_multicrack.py`: 
+
+    - **bill01.pfx**: orange
+    - **bill02.pfx**: lemon
+    - **bill03.pfx**: kiwi
+    - **bill04.pfx**: strawberry
+    - **bill05.pfx**: raspberry
+    - **bill06.pfx**: blackberry
+    - **bill07.pfx**: melon
+    - **bill09.pfx**: pineapple
+    - **bill10.pfx**: blueberry
+    - **bill11.pfx**: pear
+    - **bill12.pfx**: coconut
+    - **bill13.pfx**: apricot
+    - **bill14.pfx**: guava
+    - **bill15.pfx**: tangerine
+    - **bill16.pfx**: pomegranate
+    - **bill17.pfx**: olivez
+
+![ecc](/Lab5/exercise6/img/2.png)
+
+The files country01.pfx, country02.pfx … country06.pfx have a password which are countries. Can you determine the countries used:
+
+Using `exercise6/cert_crack/pfx_multicrack2.py`: 
+
+- **country01.pfx**: germany
+- **country02.pfx**: finland
+- **country03.pfx**: russia
+- **country04.pfx**: iceland
+- **country05.pfx**: estonia
+- **country06.pfx**: france
+
+![ecc](/Lab5/exercise6/img/3.png)
