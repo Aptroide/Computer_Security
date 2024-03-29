@@ -80,7 +80,7 @@ We can observe that the files are the same, indicating that the environment vari
 
 It is important to note that if we use a different name for the executable file when compiling **Step 2**, we will observe differences when executing **Step 3** on the last line `_=./a.out`. However, this differences is solely  the name of the executable file. 
 
-## Exercise 3:Environment Variables and `execve()`
+## Exercise 3: Environment Variables and `execve()`
 
 **Step 1*
 
@@ -105,3 +105,11 @@ execve("/usr/bin/env", argv, environ);
 By passing the environ variable as the third argument to the execve function instead of **NULL**, as done in **Step 1**, the child process **inherits** the environment variables from the parent process. This implies that any modifications made to the environment variables in the parent process would be reflected in the child process as well.
 
 When environment variables are inherited from the parent process to the child process, it introduces a potential attack surface for malicious actors. If sensitive information such as passwords or other credentials are stored in environment variables within the parent process, these could be inadvertently leaked to the child process and potentially accessed by unauthorized entities.
+
+## Exercise 4: Environment Variables and `system()`
+
+In this task, we study how environment variables are affected when a new program is executed via  the `system()` function. This function is used to execute a command, but unlike `execve()`, which directly execute a command, `system()` actually executes "`/bin/sh -c command`", i.e., it executes `/bin/sh`, and asks the shell to execute the command.
+
+The implementation of the `system()` function its on `/Lab6/exercise3/system_env.c`.
+
+![system](/Lab6/exercise4/img/1.png)
