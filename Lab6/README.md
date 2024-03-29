@@ -110,6 +110,46 @@ When environment variables are inherited from the parent process to the child pr
 
 In this task, we study how environment variables are affected when a new program is executed via  the `system()` function. This function is used to execute a command, but unlike `execve()`, which directly execute a command, `system()` actually executes "`/bin/sh -c command`", i.e., it executes `/bin/sh`, and asks the shell to execute the command.
 
-The implementation of the `system()` function its on `/Lab6/exercise3/system_env.c`.
+The implementation of the `system()` function its on `/Lab6/exercise4/system_env.c`.
 
 ![system](/Lab6/exercise4/img/1.png)
+
+## Exercise 5: Environment Variable and `Set-UID` Programs
+
+**Step 1**
+
+Generate `/Lab6/exercise5/setuid.c` file.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+extern char **environ;
+
+int main()
+{
+    int i = 0;
+    while (environ[i] != NULL) {
+        printf("%s\n", environ[i]);
+        i++;
+}
+}
+```
+**Step 2**
+
+Compiling `setuid.c` on `/Lab6/exercise5/foo`, changing its ownership to root, and makeing it a Set-UID program.
+```bash
+sudo chown root foo
+sudo chmod 4755 foo
+```
+![uid](/Lab6/exercise5/img/1.png)
+
+**Step 3**
+
+Cheking some environment variables:
+![uid](/Lab6/exercise5/img/2.png)
+
+Using **Step 2** executable to chek the environment variables:
+![uid](/Lab6/exercise5/img/3.png)
+
+When a Set-UID program is executed, it runs with the permissions of the program's owner (in this case, root), rather than the user who executed it (seed). Despite this change in user identity, the environment variables are still inherited from the parent process (seed) instead of using root environment variables.
