@@ -328,3 +328,42 @@ Based on the observations from the experiment above. We can clearly demonstrate 
 The main cause of the differences observed in the behaviors of `myprog` lies in the presence and inheritance of the `LD_PRELOAD` environment variable. `LD_PRELOAD`, when set in the environment of the process, can override function calls, including those in `Set-UID` programs, thereby influencing their behavior. However, `LD_PRELOAD` may not always be inherited by child processes, particularly in `Set-UID` contexts, depending on system security settings.
 
 ## Exercise 8: Invoking External Programs Using `system()` versus `execve()`
+
+### Step 1
+Compile `Lab6/exercise8/catall.c`, make it a root-owned Set-UID program. The program will use
+`system()` to invoke the command. 
+
+![system vs execve](/Lab6/exercise8/img/1.png)
+
+Can you compromise the integrity of the system? For example, can you remove a file that is not writable to you?
+
+Yes, since we are using `system()` we can change the bash and get root privileges.
+```bash
+sudo ln -sf /bin/zsh /bin/sh
+```
+![system vs execve](/Lab6/exercise8/img/2.png)
+![system vs execve](/Lab6/exercise8/img/3.png)
+
+Once we have the root we can do whatever we want on the system.
+
+### Step 2
+
+Comment out the `system(command)` statement, and uncomment the `execve()` statement; the program will use `execve()` to invoke the command. Compile the program, and make it a root-owned Set-UID. 
+
+![system vs execve](/Lab6/exercise8/img/4.png)
+
+
+Do your attacks in Step 1 still work? Please describe and explain your observations.
+
+No, the attack did not work because the `execve()` function expect as argument just a file name, so when we try to run
+```bash
+./catallse "/etc/shadow;/bin/zsh"
+```
+we get:
+```bash
+/bin/cat: '/etc/shadow;/bin/zsh': No such file or directory
+```
+
+![system vs execve](/Lab6/exercise8/img/5.png)
+
+`execve()` bypasses the shell, directly executing the specified command without interpreting environment variables or shell-specific syntax.
