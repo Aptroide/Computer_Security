@@ -337,7 +337,7 @@ Compile `Lab6/exercise8/catall.c`, make it a root-owned Set-UID program. The pro
 
 #### Can you compromise the integrity of the system? For example, can you remove a file that is not writable to you?
 
-Yes, since we are using `system()` we can change the bash and get root privileges.
+Yes, since we are using `system()` we can change the bash and get root privileges:
 ```bash
 sudo ln -sf /bin/zsh /bin/sh
 ```
