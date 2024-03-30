@@ -237,13 +237,13 @@ int main()
 
 ### Step 2
 
-- Make `myprog` a regular program, and run it as a normal user. Overridden `sleep()` function is called.
+- Make `Lab6/exercise7/myprog` a regular program, and run it as a normal user. Overridden `sleep()` function is called.
 ```bash
 [03/29/24]seed@VM:~/.../ex7$ ./myprog 
 I am not sleeping!
 ```
 
-- Make `myprog` a `Set-UID` root program, and run it as a normal user. `sleep()` function is called.
+- Make `Lab6/exercise7/myprog` a `Set-UID` root program, and run it as a normal user. `sleep()` function is called.
 ```bash
 [03/29/24]seed@VM:~/.../ex7$ sudo chown root myprog
 [03/29/24]seed@VM:~/.../ex7$ sudo chmod 4755 myprog
@@ -252,7 +252,7 @@ I am not sleeping!
 ```
 
 
-- Make `myprog` a `Set-UID` root program, export the LD PRELOAD environment variable again in the root account and run it. Overridden `sleep()` function is called.
+- Make `Lab6/exercise7/myprog` a `Set-UID` root program, export the LD PRELOAD environment variable again in the root account and run it. Overridden `sleep()` function is called.
 ```bash
 [03/29/24]seed@VM:~/.../ex7$ sudo su -
 root@VM:~# ls
@@ -267,7 +267,7 @@ root@VM:/home/seed/Documents/Lab6/ex7#
 
 ![lsuid](/Lab6/exercise7/img/2.png)
 
-- Make `myprog` a `Set-UID` user1 program, export the LD PRELOAD environment variable again in a different user’s account (not-root user) and run it. `sleep()` function is called.
+- Make `Lab6/exercise7/myprog` a `Set-UID` user1 program, export the LD PRELOAD environment variable again in a different user’s account (not-root user) and run it. `sleep()` function is called.
 ```bash
 [03/29/24]seed@VM:~/.../ex7$ sudo adduser user1
 Adding user `user1' ...
@@ -315,17 +315,17 @@ total 56
 
 Based on the observations from the experiment above. We can clearly demonstrate the behavior of the `LD_PRELOAD` environment variable in relation to `Set-UID` programs under different ownership and execution contexts. The core observation is:
 
-- When `myprog` is run as a regular program by a normal user, the overridden sleep() function from the `LD_PRELOAD` environment variable is called. 
+- When `Lab6/exercise7/myprog` is run as a regular program by a normal user, the overridden sleep() function from the `LD_PRELOAD` environment variable is called. 
 
-- When `myprog` is made a `Set-UID` program owned by root and then executed by a normal user, the standard sleep() function is called, indicating that the `LD_PRELOAD` environment variable is ignored. 
+- When `Lab6/exercise7/myprog` is made a `Set-UID` program owned by root and then executed by a normal user, the standard sleep() function is called, indicating that the `LD_PRELOAD` environment variable is ignored. 
 
-- When the `LD_PRELOAD` variable is set in the root account and `myprog` is executed under this condition, the overridden function is called again. 
+- When the `LD_PRELOAD` variable is set in the root account and `Lab6/exercise7/myprog` is executed under this condition, the overridden function is called again. 
 
-- When making `myprog` a `Set-UID` program owned by a non-root user (user1) and running it in a different user’s account without root privileges results in the standard sleep() function being called, ignoring `LD_PRELOAD`.
+- When making `Lab6/exercise7/myprog` a `Set-UID` program owned by a non-root user (user1) and running it in a different user’s account without root privileges results in the standard sleep() function being called, ignoring `LD_PRELOAD`.
 
 
 
-The main cause of the differences observed in the behaviors of `myprog` lies in the presence and inheritance of the `LD_PRELOAD` environment variable. `LD_PRELOAD`, when set in the environment of the process, can override function calls, including those in `Set-UID` programs, thereby influencing their behavior. However, `LD_PRELOAD` may not always be inherited by child processes, particularly in `Set-UID` contexts, depending on system security settings.
+The main cause of the differences observed in the behaviors of `Lab6/exercise7/myprog` lies in the presence and inheritance of the `LD_PRELOAD` environment variable. `LD_PRELOAD`, when set in the environment of the process, can override function calls, including those in `Set-UID` programs, thereby influencing their behavior. However, `LD_PRELOAD` may not always be inherited by child processes, particularly in `Set-UID` contexts, depending on system security settings.
 
 ## Exercise 8: Invoking External Programs Using `system()` versus `execve()`
 
@@ -335,7 +335,7 @@ Compile `Lab6/exercise8/catall.c`, make it a root-owned Set-UID program. The pro
 
 ![system vs execve](/Lab6/exercise8/img/1.png)
 
-Can you compromise the integrity of the system? For example, can you remove a file that is not writable to you?
+#### Can you compromise the integrity of the system? For example, can you remove a file that is not writable to you?
 
 Yes, since we are using `system()` we can change the bash and get root privileges.
 ```bash
@@ -348,12 +348,12 @@ Once we have the root we can do whatever we want on the system.
 
 ### Step 2
 
-Comment out the `system(command)` statement, and uncomment the `execve()` statement; the program will use `execve()` to invoke the command. Compile the program, and make it a root-owned Set-UID. 
+#### Comment out the `system(command)` statement, and uncomment the `execve()` statement; the program will use `execve()` to invoke the command. Compile the program, and make it a root-owned Set-UID. 
 
 ![system vs execve](/Lab6/exercise8/img/4.png)
 
 
-Do your attacks in Step 1 still work? Please describe and explain your observations.
+#### Do your attacks in Step 1 still work? Please describe and explain your observations.
 
 No, the attack did not work because the `execve()` function expect as argument just a file name, so when we try to run
 ```bash
@@ -367,3 +367,18 @@ we get:
 ![system vs execve](/Lab6/exercise8/img/5.png)
 
 `execve()` bypasses the shell, directly executing the specified command without interpreting environment variables or shell-specific syntax.
+
+## Exercise 9: Capability Leaking
+
+#### Compile `Lab6/exercise8/cap_leak.c`, change its owner to root, and make it a `Set-UID` program. Run the program as a normal user. 
+
+![leaking](/Lab6/exercise9/img/1.png)
+
+
+#### Can you exploit the capability leaking vulnerability in this program? The goal is to write to the /etc/zzz file as a normal user
+
+Yes.
+
+![leak](/Lab6/exercise9/img/2.png)
+
+When the `Set-UID` program `/Lab6/exercise9/capLeak` drops privileges using `setuid(getuid());`, it still retains the file descriptor to `/etc/zzz` that was opened prior to the privilege drop. The shell that is spawned after the privilege drop inherits these file descriptors, and can then perform operations on them with elevated privileges despite the shell itself running with normal user privileges. This means the shell, and hence any user operating within it, can write to `/etc/zzz` even though the file is owned by root and not writable by unprivileged users.
