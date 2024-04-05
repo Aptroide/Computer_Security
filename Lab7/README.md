@@ -32,19 +32,22 @@ These are two additional countermeasures implemented in the system. They can be 
 
 The ultimate goal of buffer-overflow attacks is to inject malicious code into the target program, so the code can be executed using the target program’s privilege. Shellcode is widely used in most code-injection attacks.
 
-To show how this works, we have `/Lab7/exercise1/call_shellcode.c` file, that togheter with `/Lab7/exercise1/Makefile` creates two copies of shellcode, one is 32-bit and the other is 64-bit.
+To demonstrate how this works, we have the `/Lab7/exercise1/call_shellcode.c` file, which, together with `/Lab7/exercise1/Makefile`, creates two copies of shellcode, one is 32-bit and the other is 64-bit.
 
-By writing `make`, we are using:
+By running `make`, we are using:
+
 ```bash
 gcc -m32 -z execstack -o a32.out call_shellcode.c
 gcc -z execstack -o a64.out call_shellcode.c
 ```
 ![make](/Lab7/exercise1/img/1.png)
 
-We can see on the image that both binaries run without any problem despite we are working on a 64-bit VM.
-Modern linux OS include compatibility layers (such as the ia32-libs package) that allow them to run 32-bit binaries. This is accomplished through the use of system libraries that can handle the translation from 32-bit to 64-bit system calls.
+We can see in the image that both binaries run without any problem despite working on a 64-bit VM. Modern Linux OS includes compatibility layers (such as the ia32-libs package) that allow them to run 32-bit binaries. This is accomplished through the use of system libraries that can handle the translation from 32-bit to 64-bit system calls.
 
 
-If we make `/Lab7/exercise1/a32.out` and `/Lab7/exercise1/a64.out` a root-owned Set-UID programs, we can get into the root shell.
+If we make `/Lab7/exercise1/a32.out` and `/Lab7/exercise1/a64.out` root-owned Set-UID programs, we can obtain a root shell.
 
 ![make](/Lab7/exercise1/img/2.png)
+
+
+## Exercise 2: Understanding the Vulnerable Program
