@@ -51,3 +51,77 @@ If we make `/Lab7/exercise1/a32.out` and `/Lab7/exercise1/a64.out` root-owned Se
 
 
 ## Exercise 2: Understanding the Vulnerable Program
+
+The vulnerable program used in this lab is `/Lab7/exercise2/stack.c`. This program has a buffer-overflow vulnerability, and your job is to exploit this vulnerability and gain the root privilege. 
+
+```c
+include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+/* Changing this size will change the layout of the stack.
+* Instructors can change this value each year, so students
+* won’t be able to use the solutions from the past. */
+#ifndef BUF_SIZE
+#define BUF_SIZE 100
+#endif
+
+int bof(char *str)
+{
+    char buffer[BUF_SIZE];
+    /* The following statement has a buffer overflow problem */
+    strcpy(buffer, str);
+    return 1;
+}
+
+int main(int argc, char **argv)
+{
+    char str[517];
+    FILE *badfile;
+    badfile = fopen("badfile", "r");
+    fread(str, sizeof(char), 517, badfile);
+    bof(str);
+    printf("==== Returned Properly ====\n");
+    return 1;
+}
+```
+
+By running `make`, we obtain:
+![make](/Lab7/exercise2/img/1.png)
+
+- `stack-LX`: 32-bit and 64 bit vulnerable programs for diferents levels (X).
+- `stack-X-dbg`: 32-bit and 64 bit vulnerable program with debugging information added to the  for diferents levels (X).
+
+## Exercise 3: Launching Attack on 32-bit Program (Level 1)
+
+
+### Investigation
+
+To exploit the buffer-overflow vulnerability in the target program, the most important thing to know is the distance between the buffer’s starting position and the place where the return-address is stored. We will use a debugging method to find it out. Since we have the source code of the target program, we can compile it with the debugging flag turned on. That will make it more convenient to debug.
+
+```bash
+[04/06/24]seed@VM:~/.../Lab7$ gdb stack-L1-dbg 
+gdb-peda$ b bof
+Breakpoint 1 at 0x80484c1: file stack.c, line 18.
+gdb-peda$ run
+...
+Breakpoint 1, bof (str=0xbfffeb57 "\bB\003") at stack.c:18
+18	    strcpy(buffer, str); 
+...
+gdb-peda$ p/x &buffer
+$1 = 0xbfffeacc
+gdb-peda$ p/x $ebp
+$2 = 0xbfffeb38
+```
+
+Now we know that:
+- buffer = 0xbfffeacc
+- ebp = 0xbfffeb38
+- L = 4
+- offset = ebp - buffer + L
+- ret = buffer + offset + 100
+
+
+# Calculate the offset to place the return address right after the buffer
+offset = 0xbfffeb38 - 0xbfffeacc + L # The size of the buffer in the vulnerable program
+# Use a debugger to find the correct return address.
+ret = 0xbfffeacc + offset + 100 
