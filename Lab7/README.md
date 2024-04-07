@@ -446,7 +446,7 @@ AttackStackGuard adds a special value called "Canary" to the stack frame, which 
 
 ### Exercise 9.2 Turn on the Non-executable Stack Protection
 
-In this task, we will make the stack non-executable. We will do this experiment in the shellcode folder. The call shellcode program puts a copy of shellcode on the stack, and then executes the code from the stack. 
+In this task, we will make the stack non-executable. We will do this experiment in the `/Lab7/exercise9/shellcode`  folder. The call shellcode program puts a copy of shellcode on the stack, and then executes the code from the stack. 
 
 We will recompile call_shellcode.c into a32.out and a64.out, without the `-z execstack` option by changin `/Lab7/exercise9/shellcode/Makefile`:
 
