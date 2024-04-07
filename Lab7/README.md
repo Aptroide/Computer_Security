@@ -421,3 +421,49 @@ done
 We defeat this measure easily on  32-bit:
 
 ![attacks](/Lab7/exercise8/img/2.png)
+
+## Exercise 9: Experimenting with Other Countermeasures
+
+### Exercise 9.1 Turn on the StackGuard Protection
+
+Turn on the StackGuard protection by recompiling the vulnerable stack.c program without the `-fno-stack-protector` flag, we do this by changing `/Lab7/exercise9/Makefile`:
+```bash
+FLAGS    = -z execstack
+FLAGS_32 = -m32
+TARGET   = stack-L1 stack-L2 stack-L3 stack-L4 stack-L1-dbg stack-L2-dbg stack-L3-dbg stack-L4-dbg
+
+L1 = 100
+L2 = 160
+L3 = 200
+L4 = 10
+...
+```
+![attacks](/Lab7/exercise9/img/1.png)
+
+Different from what we had in the Level-1 attack, when we remove the flag `-fno-stack-protector` we cannot do the attack.
+
+AttackStackGuard adds a special value called "Canary" to the stack frame, which is randomly generated when the program starts and stored at the end of the stack frame. When an attacker attempts to overflow the stack, they must modify the Canary value simultaneously, otherwise StackGuard will detect the stack overflow attack and terminate the program.
+
+### Exercise 9.2 Turn on the Non-executable Stack Protection
+
+In this task, we will make the stack non-executable. We will do this experiment in the shellcode folder. The call shellcode program puts a copy of shellcode on the stack, and then executes the code from the stack. 
+
+We will recompile call_shellcode.c into a32.out and a64.out, without the `-z execstack` option by changin `/Lab7/exercise9/shellcode/Makefile`:
+
+```bash
+all: 
+	gcc -m32 -o a32.out call_shellcode.c
+	gcc -o a64.out call_shellcode.c
+
+setuid:
+	gcc -m32 -o a32.out call_shellcode.c
+	gcc -o a64.out call_shellcode.c
+	sudo chown root a32.out a64.out
+	sudo chmod 4755 a32.out a64.out
+
+clean:
+	rm -f a32.out a64.out *.o
+```
+![attacks](/Lab7/exercise9/img/2.png)
+
+Removing the `-z execstack` option likely prevents the attacks from working because it disables the executable stack, which is necessary for executing shellcode stored on the stack. Without this option, the operating system's security mechanisms prevent the execution of code residing on the stack, thereby rendering the shellcode ineffective.
