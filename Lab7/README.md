@@ -237,7 +237,7 @@ Now we know that:
 
 Notice that use `p $rbp` instead of `p $edp` to access the base pointer register because we are workink on 64-bit architecture. For the same reaseon we add 8 instead of 4 to the offset.
 
-The address you've chosen (buffer + start) does not contain zero bytes in the middle and thus is being copied correctly onto the stack.
+The address chosen (buffer + start) does not contain zero bytes in the middle and thus is being copied correctly onto the stack.
 
 The interval of `start` that I found effective ranges from 97 to 162. Initially, I started with 120 (as suggested by the book), then fine-tuned it through trial and error tests, centered around the initial value of 120.
 
