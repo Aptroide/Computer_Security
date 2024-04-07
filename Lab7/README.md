@@ -390,3 +390,5 @@ And run a64.out and a32.out again:
 After running the modified set-UID program with the updated shellcode, we successfully obtains a root shell, as indicated by the command prompt change from `$` to `#.`
 
 To escalate privileges, the shellcode is modified to include additional instructions that escalate the process's privileges `before` spawning the shell.
+
+## Exercise 8: Defeating Address Randomization
